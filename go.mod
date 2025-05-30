@@ -1,4 +1,4 @@
-module github.com/ethanbaker/media-bot
+module github.com/ethanbaker/grabber
 
 go 1.24.3
 
