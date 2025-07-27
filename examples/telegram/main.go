@@ -73,13 +73,14 @@ func sendMediaMessage(rawUrl string, update tgbotapi.Update) {
 	results, err := mediaGrabber.Download(rawUrl, name)
 
 	// Defer temporary file removal
-	defer func(path string) {
+	defer func() {
+		path := DOWNLOAD_DIR + name
 		log.Printf("[INFO]: removing download folder '%s'\n", path)
 
 		if err := os.RemoveAll(path); err != nil {
 			log.Printf("[ERR]: failed to remove download folder '%s' (%v)\n", path, err)
 		}
-	}(name)
+	}()
 
 	// If an error is present from downloading, return error message
 	if err != nil {

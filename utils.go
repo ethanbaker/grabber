@@ -22,15 +22,6 @@ func ReencodeForTelegramIOS(path string) error {
 	name := base[:len(base)-len(ext)]
 	tempPath := filepath.Join(dir, name+"_temp"+ext)
 
-	// Defer removal of the temporary file
-	defer func() {
-		if err := os.Remove(tempPath); err != nil {
-			fmt.Printf("[ERR]: failed to remove temporary file '%s' (%v)\n", tempPath, err)
-		} else {
-			fmt.Printf("[INFO]: successfully removed temporary file '%s'\n", tempPath)
-		}
-	}()
-
 	// Construct ffmpeg command
 	cmd := exec.Command(
 		"ffmpeg",
@@ -46,11 +37,23 @@ func ReencodeForTelegramIOS(path string) error {
 
 	// Run the command
 	if err := cmd.Run(); err != nil {
+		if err := os.Remove(tempPath); err != nil {
+			fmt.Printf("[ERR]: failed to remove temporary file '%s' (%v)\n", tempPath, err)
+		} else {
+			fmt.Printf("[INFO]: successfully removed temporary file '%s'\n", tempPath)
+		}
+
 		return fmt.Errorf("ffmpeg re-encode failed: %v", err)
 	}
 
 	// Replace original file with re-encoded version
 	if err := os.Rename(tempPath, path); err != nil {
+		if err := os.Remove(tempPath); err != nil {
+			fmt.Printf("[ERR]: failed to remove temporary file '%s' (%v)\n", tempPath, err)
+		} else {
+			fmt.Printf("[INFO]: successfully removed temporary file '%s'\n", tempPath)
+		}
+
 		return fmt.Errorf("failed to replace original file: %v", err)
 	}
 
