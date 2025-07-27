@@ -258,9 +258,13 @@ func main() {
 
 // filter filters the results based on a condition
 func filter(results *[]grabber.FileResult, condition func(grabber.FileResult) bool) {
-	for i, r := range *results {
-		if !condition(r) {
-			*results = append((*results)[:i], (*results)[i+1:]...)
+	filtered := make([]grabber.FileResult, 0, len(*results))
+
+	for _, r := range *results {
+		if condition(r) {
+			filtered = append(filtered, r)
 		}
 	}
+
+	*results = filtered
 }
